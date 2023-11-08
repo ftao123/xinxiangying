@@ -127,18 +127,18 @@
         transform: rotate(-45deg);
       }
 
-      .balloonBox {
+      .qiQiuContent {
         width: 100%;
         height: 100%;
       }
 
-      .balloon {
+      .qiQiu {
         position: absolute;
         border-radius: 50%;
         text-align: center;
       }
 
-      .balloon:after {
+      .qiQiu:after {
         content: "";
         position: absolute;
         background: rgba(189, 207, 21, 0.96);
@@ -212,14 +212,16 @@
         <p id="bbContent">520</p>
       </div>
     </div>
-    <div class="balloonBox"></div>
+    <div class="qiQiuContent"></div>
     <script>
       const content = document.getElementById("bbContent");
+      let qiQiuText;
       if (content) {
         //获取url参数
         const paramsStr = window.location.search;
         const params = new URLSearchParams(paramsStr);
         content.innerHTML = params.get("text");
+        qiQiuText = params.get("qiQiuText") || "1314";
       }
       function color(self) {
         var _color = randomMyColor();
@@ -229,7 +231,7 @@
           return _color;
         }
       }
-      function MyBalloon() {
+      function QiQiuObj() {
         this.div = document.createElement("div");
         this.left = randomRange(0, 100);
         this.top = randomRange(0, 50);
@@ -239,14 +241,14 @@
         this.speedX = randomRange(-5, 5);
         this.speedY = randomRange(-5, 5);
       }
-      MyBalloon.prototype.draw = function (parent) {
+      QiQiuObj.prototype.draw = function (parent) {
         this.parent = parent;
         var _div = this.div;
         var style = _div.style;
         style.width = this.r * 2 + "px";
         style.height = this.r * 2 + "px";
-        _div.className = "balloon";
-        _div.innerHTML = "1314";
+        _div.className = "qiQiu";
+        _div.innerHTML = qiQiuText;
         style.lineHeight = this.r * 2 + "px";
         style.fontSize = this.r / 2 + "px";
         style.left = this.left + "px";
@@ -255,7 +257,7 @@
         style.color = this.color;
         parent.appendChild(this.div);
       };
-      MyBalloon.prototype.move = function () {
+      QiQiuObj.prototype.move = function () {
         var maxLeft = this.parent.offsetWidth - this.r * 2;
         var maxTop = this.parent.offsetHeight - this.r * 2;
         var self = this;
@@ -302,8 +304,8 @@
       function draw() {
         var n = 1;
         for (var i = 0; i <= 36; i++) {
-          var b = new MyBalloon();
-          b.draw(document.body.getElementsByClassName("balloonBox")[0]);
+          var b = new QiQiuObj();
+          b.draw(document.body.getElementsByClassName("qiQiuContent")[0]);
           b.move();
         }
       }
