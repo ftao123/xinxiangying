@@ -1,0 +1,22 @@
+{
+  "name": "xinxiangying",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ftao123/xinxiangying.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ftao123/xinxiangying/issues"
+  },
+  "homepage": "https://github.com/ftao123/xinxiangying#readme",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.3"
+  }
+}
