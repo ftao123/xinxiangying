@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/ftao123/xinxiangying#readme",
   "devDependencies": {
-    "html-webpack-plugin": "^5.5.3"
+    "html-webpack-plugin": "^5.5.3",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   }
 }
