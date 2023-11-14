@@ -31,6 +31,22 @@
         overflow: hidden;
         background: -webkit-radial-gradient(center, #0dd8d8, rgb(46, 8, 88));
       }
+      #heartView {
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      #failureView {
+        display: none;
+        margin: 10vw;
+        padding: 5vw;
+        border: 2px solid #c4c7ce;
+        border-radius: 10px;
+        color: #222;
+        background: #fff;
+        font-size: 16px;
+        z-index: 1;
+      }
       .heartBox {
         position: absolute;
         width: 50vw;
@@ -159,108 +175,125 @@
   </head>
 
   <body>
-    <div class="heartBox">
-      <div class="myHeart">
-        <div class="one"></div>
-        <div class="two"></div>
-        <div class="three"></div>
+    <div id="heartView">
+      <div class="heartBox">
+        <div class="myHeart">
+          <div class="one"></div>
+          <div class="two"></div>
+          <div class="three"></div>
+        </div>
+        <div id="xinTextView"></div>
       </div>
-      <div id="xinTextView"></div>
+      <div class="qiQiuContent"></div>
     </div>
-    <div class="qiQiuContent"></div>
-    <script>
-      const content = document.getElementById("xinTextView");
-      let qiQiuText;
-      let xinText;
-      if (content) {
-        //获取url参数
-        const paramsStr = window.location.search;
-        const params = new URLSearchParams(paramsStr);
-        content.innerHTML =
-          params.get("xinText") || params.get("text") || "520";
-        qiQiuText = params.get("qiQiuText") || "1314";
-      }
-      function color(self) {
-        var _color = randomMyColor();
-        if (_color == self.bg) {
-          color(self);
-        } else {
-          return _color;
-        }
-      }
-      function QiQiuObj() {
-        this.div = document.createElement("div");
-        this.left = randomRange(0, 100);
-        this.top = randomRange(0, 50);
-        this.bg = randomMyColor();
-        this.color = color(this);
-        this.r = Math.random() * 40 + 20;
-        this.speedX = randomRange(-5, 5);
-        this.speedY = randomRange(-5, 5);
-      }
-      QiQiuObj.prototype.draw = function (parent) {
-        this.parent = parent;
-        var _div = this.div;
-        var style = _div.style;
-        style.width = this.r * 2 + "px";
-        style.height = this.r * 2 + "px";
-        _div.className = "qiQiu";
-        _div.innerHTML = qiQiuText;
-        style.lineHeight = this.r * 2 + "px";
-        style.fontSize = this.r / 2 + "px";
-        style.left = this.left + "px";
-        style.top = this.top + "px";
-        style.background = this.bg;
-        style.color = this.color;
-        parent.appendChild(this.div);
-      };
-      QiQiuObj.prototype.move = function () {
-        var maxLeft = this.parent.offsetWidth - this.r * 2;
-        var maxTop = this.parent.offsetHeight - this.r * 2;
-        var self = this;
-        var _div = self.div;
-        setInterval(function () {
-          var left = _div.offsetLeft + self.speedX;
-          var top = _div.offsetTop + self.speedY;
-          if (left <= 0) {
-            left = 0;
-            self.speedX *= -1;
-          }
-          if (top <= 0) {
-            top = 0;
-            self.speedY *= -1;
-          }
-          if (left >= maxLeft) {
-            left = maxLeft;
-            self.speedX *= -1;
-          }
-          if (top >= maxTop) {
-            top = maxTop;
-            self.speedY *= -1;
-          }
-          _div.style.left = left + "px";
-          _div.style.top = top + "px";
-        }, 30);
-      };
-      function randomRange(min, max) {
-        return Math.random() * (max - min) + min;
-      }
-      function randomMyColor() {
-        var r = randomRange(0, 255);
-        var g = randomRange(0, 255);
-        var b = randomRange(0, 255);
-        var a = randomRange(0, 1);
-        return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-      }
-      function draw() {
-        var n = 1;
-        for (var i = 0; i <= 36; i++) {
-          var b = new QiQiuObj();
-          b.draw(document.body.getElementsByClassName("qiQiuContent")[0]);
-          b.move();
-        }
-      }
-      draw();
-    </script>
+    <div id="failureView">二维码已失效</div>
   </body>
+  <script>
+    const content = document.getElementById("xinTextView");
+    const heartView = document.getElementById("heartView");
+    const failureView = document.getElementById("failureView");
+    let qiQiuText;
+    let xinText;
+    let failureTime;
+    let isZao = true;
+    if (content) {
+      //获取url参数
+      const paramsStr = window.location.search;
+      const params = new URLSearchParams(paramsStr);
+      content.innerHTML = params.get("xinText") || params.get("text") || "520";
+      qiQiuText = params.get("qiQiuText") || "1314";
+      failureTime = params.get("failureTime");
+      if (failureTime) {
+        isZao = new Date() > new Date(failureTime);
+        if (!isZao) {
+          document.body.style.background = "#fff";
+          failureView.style.display = "block";
+        }
+      }
+    }
+    function color(self) {
+      var _color = randomMyColor();
+      if (_color == self.bg) {
+        color(self);
+      } else {
+        return _color;
+      }
+    }
+    function QiQiuObj() {
+      this.div = document.createElement("div");
+      this.left = randomRange(0, 100);
+      this.top = randomRange(0, 50);
+      this.bg = randomMyColor();
+      this.color = color(this);
+      this.r = Math.random() * 40 + 20;
+      this.speedX = randomRange(-5, 5);
+      this.speedY = randomRange(-5, 5);
+    }
+    QiQiuObj.prototype.draw = function (parent) {
+      this.parent = parent;
+      var _div = this.div;
+      var style = _div.style;
+      style.width = this.r * 2 + "px";
+      style.height = this.r * 2 + "px";
+      _div.className = "qiQiu";
+      _div.innerHTML = qiQiuText;
+      style.lineHeight = this.r * 2 + "px";
+      style.fontSize = this.r / 2 + "px";
+      style.left = this.left + "px";
+      style.top = this.top + "px";
+      style.background = this.bg;
+      style.color = this.color;
+      parent.appendChild(this.div);
+    };
+    QiQiuObj.prototype.move = function () {
+      var maxLeft = this.parent.offsetWidth - this.r * 2;
+      var maxTop = this.parent.offsetHeight - this.r * 2;
+      var self = this;
+      var _div = self.div;
+      setInterval(function () {
+        var left = _div.offsetLeft + self.speedX;
+        var top = _div.offsetTop + self.speedY;
+        if (left <= 0) {
+          left = 0;
+          self.speedX *= -1;
+        }
+        if (top <= 0) {
+          top = 0;
+          self.speedY *= -1;
+        }
+        if (left >= maxLeft) {
+          left = maxLeft;
+          self.speedX *= -1;
+        }
+        if (top >= maxTop) {
+          top = maxTop;
+          self.speedY *= -1;
+        }
+        _div.style.left = left + "px";
+        _div.style.top = top + "px";
+      }, 30);
+    };
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+    function randomMyColor() {
+      var r = randomRange(0, 255);
+      var g = randomRange(0, 255);
+      var b = randomRange(0, 255);
+      var a = randomRange(0, 1);
+      return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    }
+    function draw() {
+      var n = 1;
+      for (var i = 0; i <= 36; i++) {
+        var b = new QiQiuObj();
+        b.draw(document.body.getElementsByClassName("qiQiuContent")[0]);
+        b.move();
+      }
+    }
+    if (isZao) {
+      heartView.style.display = "block";
+      draw();
+    }
+  </script>
 </html>
