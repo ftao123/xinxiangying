@@ -96,9 +96,7 @@
     const text = params.get("text") || "";
     childDom.innerHTML = text;
     let time;
-    function copy() {
-      /* 复制内容到文本域 */
-      navigator.clipboard.writeText(text);
+    function showMessage() {
       if (!time) {
         time = setTimeout(() => {
           clearTimeout(time);
@@ -106,6 +104,22 @@
           messageDom.style.display = "none";
         }, 2000);
         messageDom.style.display = "block";
+      }
+    }
+    function copy() {
+      /* 复制内容到文本域 */
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          showMessage();
+        });
+      } else {
+        let copyInput = document.createElement("input");
+        copyInput.value = text;
+        document.body.appendChild(copyInput);
+        copyInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(copyInput);
+        showMessage();
       }
     }
   </script>
