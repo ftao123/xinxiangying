@@ -191,7 +191,7 @@
   <script>
     const content = document.getElementById("xinTextView");
     const heartView = document.getElementById("heartView");
-    const failureView = document.getElementById("failureView");
+    const failureDom = document.getElementById("failureView");
     let qiQiuText;
     let xinText;
     let failureTime;
@@ -204,10 +204,10 @@
       qiQiuText = params.get("qiQiuText") || "1314";
       failureTime = params.get("failureTime");
       if (failureTime) {
-        isZao = new Date() > new Date(failureTime);
+        isZao = new Date() > new Date(Number(failureTime));
         if (!isZao) {
           document.body.style.background = "#fff";
-          failureView.style.display = "block";
+          failureDom.style.display = "block";
         }
       }
     }
