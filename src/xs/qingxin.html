@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>浪漫的表白</title>
+    <style type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .clearfix:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+      .fl {
+        float: left;
+      }
+      .fr {
+        float: right;
+      }
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: -webkit-radial-gradient(center, #0dd8d8, rgb(46, 8, 88));
+      }
+      #heartView {
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      #failureView {
+        display: none;
+        margin: 10vw;
+        padding: 5vw;
+        border: 2px solid #c4c7ce;
+        border-radius: 10px;
+        color: #222;
+        background: #fff;
+        font-size: 16px;
+        z-index: 1;
+      }
+      .heartBox {
+        position: absolute;
+        width: 50vw;
+        height: 50vw;
+        left: 0;
+        right: 0;
+        margin: 30% auto;
+      }
+      .myHeart {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform: rotate(45deg);
+        animation: heartMove 10s infinite alternate;
+        z-index: 10;
+      }
+      #xinTextView {
+        font-weight: 500;
+        text-align: center;
+        z-index: 100;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin-top: 10%;
+      }
+      .myHeart div {
+        position: absolute;
+        width: 32vw;
+        height: 32vw;
+        background: rgb(255, 0, 200);
+      }
+      .myHeart .two {
+        right: 0;
+        bottom: 0;
+      }
+      .myHeart .one {
+        left: 0;
+        bottom: 0;
+        border-radius: 50%;
+      }
+      .myHeart .three {
+        top: 0;
+        right: 0;
+        border-radius: 50%;
+      }
+      .qiQiuContent {
+        width: 100%;
+        height: 100%;
+      }
+      .qiQiu {
+        position: absolute;
+        border-radius: 50%;
+        text-align: center;
+      }
+      .qiQiu:after {
+        content: "";
+        position: absolute;
+        background: rgba(189, 207, 21, 0.96);
+        height: 80px;
+        width: 2px;
+        left: 0;
+        right: 0;
+        bottom: -80px;
+        margin: auto;
+      }
+      @-webkit-keyframes heartMove {
+        10% {
+          transform: rotate(45deg) scale(1.1);
+          text-shadow: 0 0 5px #fff;
+          opacity: 0.2;
+          color: rgb(122, 196, 26);
+        }
+        20% {
+          transform: rotate(45deg) scale(1.2);
+          text-shadow: 0 0 5px #fff;
+        }
+        30% {
+          transform: rotate(45deg) scale(1.3);
+          text-shadow: 0 0 5px #fff;
+        }
+        40% {
+          transform: rotate(45deg) scale(1.2);
+          text-shadow: 0 0 5px #fff;
+        }
+        50% {
+          transform: rotate(45deg) scale(1.3);
+          text-shadow: 0 0 5px #fff;
+        }
+        60% {
+          transform: rotate(45deg) scale(1.2);
+          text-shadow: 0 0 5px #fff;
+        }
+        70% {
+          transform: rotate(45deg) scale(1.3);
+          text-shadow: 0 0 5px #fff;
+        }
+        80% {
+          transform: rotate(45deg) scale(1.2);
+          text-shadow: 0 0 10px #fff;
+        }
+        90% {
+          transform: rotate(45deg) scale(1.1);
+          text-shadow: 0 0 5px #fff;
+          opacity: 1;
+          color: rgb(219, 190, 25);
+        }
+      }
+      @media screen and (min-width: 1024px) {
+        .heartBox {
+          width: 300px;
+          height: 300px;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+        }
+        .myHeart div {
+          width: 200px;
+          height: 200px;
+          margin: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="heartView">
+      <div class="heartBox">
+        <div class="myHeart">
+          <div class="one"></div>
+          <div class="two"></div>
+          <div class="three"></div>
+        </div>
+        <div id="xinTextView"></div>
+      </div>
+      <div class="qiQiuContent"></div>
+    </div>
+    <div id="failureView">二维码已失效</div>
+  </body>
+  <script>
+    const content = document.getElementById("xinTextView");
+    const heartView = document.getElementById("heartView");
+    const failureDom = document.getElementById("failureView");
+    let qiQiuText;
+    let xinText;
+    let failureTime;
+    let isZao = true;
+    if (content) {
+      //获取url参数
+      const paramsStr = window.location.search;
+      const params = new URLSearchParams(paramsStr);
+      content.innerHTML = params.get("xinText") || params.get("text") || "520";
+      qiQiuText = params.get("qiQiuText") || "1314";
+      failureTime = params.get("failureTime");
+      if (failureTime) {
+        isZao = new Date() > new Date(Number(failureTime));
+        if (isZao) {
+          document.body.style.background = "#fff";
+          failureDom.style.display = "block";
+        }
+      }
+    }
+    function color(self) {
+      var _color = randomMyColor();
+      if (_color == self.bg) {
+        color(self);
+      } else {
+        return _color;
+      }
+    }
+    function QiQiuObj() {
+      this.div = document.createElement("div");
+      this.left = randomRange(0, 100);
+      this.top = randomRange(0, 50);
+      this.bg = randomMyColor();
+      this.color = color(this);
+      this.r = Math.random() * 40 + 20;
+      this.speedX = randomRange(-5, 5);
+      this.speedY = randomRange(-5, 5);
+    }
+    QiQiuObj.prototype.draw = function (parent) {
+      this.parent = parent;
+      var _div = this.div;
+      var style = _div.style;
+      style.width = this.r * 2 + "px";
+      style.height = this.r * 2 + "px";
+      _div.className = "qiQiu";
+      _div.innerHTML = qiQiuText;
+      style.lineHeight = this.r * 2 + "px";
+      style.fontSize = this.r / 3 + "px";
+      style.left = this.left + "px";
+      style.top = this.top + "px";
+      style.background = this.bg;
+      style.color = this.color;
+      parent.appendChild(this.div);
+    };
+    QiQiuObj.prototype.move = function () {
+      var maxLeft = this.parent.offsetWidth - this.r * 2;
+      var maxTop = this.parent.offsetHeight - this.r * 2;
+      var self = this;
+      var _div = self.div;
+      setInterval(function () {
+        var left = _div.offsetLeft + self.speedX;
+        var top = _div.offsetTop + self.speedY;
+        if (left <= 0) {
+          left = 0;
+          self.speedX *= -1;
+        }
+        if (top <= 0) {
+          top = 0;
+          self.speedY *= -1;
+        }
+        if (left >= maxLeft) {
+          left = maxLeft;
+          self.speedX *= -1;
+        }
+        if (top >= maxTop) {
+          top = maxTop;
+          self.speedY *= -1;
+        }
+        _div.style.left = left + "px";
+        _div.style.top = top + "px";
+      }, 30);
+    };
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+    function randomMyColor() {
+      var r = randomRange(0, 255);
+      var g = randomRange(0, 255);
+      var b = randomRange(0, 255);
+      var a = randomRange(0, 1);
+      return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    }
+    function draw() {
+      var n = 1;
+      for (var i = 0; i <= 36; i++) {
+        var b = new QiQiuObj();
+        b.draw(document.body.getElementsByClassName("qiQiuContent")[0]);
+        b.move();
+      }
+    }
+    if (!isZao) {
+      heartView.style.display = "block";
+      draw();
+    }
+  </script>
+</html>
