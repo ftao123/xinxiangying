@@ -79,7 +79,7 @@
       }
     </style>
   </head>
-
+  <script src="https://cdn.bootcdn.net/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script>
   <body>
     <div id="contentView">
       <div id="content"></div>
@@ -106,20 +106,41 @@
     <div id="failureView">二维码已失效</div>
   </body>
   <script>
+    const privateKey = `-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCEHRXNg52BpFkfY3ZVUDUtV+cY3wDY20NiacgfyFGx+cllhYlo
+gAI9VCiGY8CDGpskVHAFP6bg+cB7NkUoFaHuU+rMBtjE1RyFdwK2K++QWhUVozCs
+9zoIfbas9XS/gZHbvc7Y1SfKOMOwjvf6qpbqq27xDfDDNP+hGWdIL1lOcwIDAQAB
+AoGATmpBDamoLFHTQEk17G9eENrS5TU/+Hc0aM5mpU6uBtg/DM4U//yy15oDL7k3
+g9mf6hFgKA1ezLwQ3lEY/TDR2pktG6hoIaJnWbWRADTymxDWW7EU6Ddf0+yM5ZN0
+ozinHqv6xk45Oc4aLeQeHW1Sh9KU3gUnaA/m2Uk3waso4skCQQDbO1hfPMWgMCr7
+5rxJLpphtUZDrSmmlXXjPDPwxc8J71OmfBzucYJL1/w8R1eTDQneeVzEz4iQ4KZZ
+gNmdteRlAkEAmkVYVT9pvtFvkUNpbhCPSBvPZzJRw4KIc+uv9kM9sfYae0FECECs
++hA5JElKLYNobJSYc44+jFtptRE5KCid9wJAZMGZk+uySDTbDHq2/ktU2KMfb+sd
+wVnfnFgG5xmCVeaQY2uXQF8aqxDQ9EM1lHfhmUXdxPY8pZkZ2vjFCx6VoQJAdBgx
+ZF3HT1E++3tWkPynRuWezBNDErVdyJaaIeHyQMVqoky4TNmXEsw4pET/LIcSg3vD
+ylpGWcvFHfzrHXyLewJBALTnltnupRJa0t2Oqkfp6mv7Z0G7Ld0a+1is53pEXlV/
+yiy14InDQg5rarpPspXqG5lsV3FZUnNrRhi/OlK5CBA=
+-----END RSA PRIVATE KEY-----`;
     const paramsStr = window.location.search;
     const contentViewDom = document.getElementById("contentView");
     const childDom = document.getElementById("content");
     const messageDom = document.getElementById("message");
     const failureDom = document.getElementById("failureView");
     const params = new URLSearchParams(paramsStr);
-    const text = params.get("text") || "";
-    const failureTime = params.get("failureTime");
-    if (failureTime && new Date() > new Date(Number(failureTime))) {
-      failureDom.style.display = "block";
-    } else {
-      contentViewDom.style.display = "block";
+    //使用私钥解密
+    const decrypt = new JSEncrypt();
+    decrypt.setPrivateKey(privateKey);
+    const resultText = decrypt.decrypt(params.get("params"));
+    if (resultText) {
+      const { text, failureTime } = JSON.parse(resultText);
+      const qrText = text || "";
+      if (failureTime && new Date() > new Date(Number(failureTime))) {
+        failureDom.style.display = "block";
+      } else {
+        contentViewDom.style.display = "block";
+      }
+      childDom.innerHTML = text;
     }
-    childDom.innerHTML = text;
     let time;
     function showMessage() {
       if (!time) {

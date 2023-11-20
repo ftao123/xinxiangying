@@ -8,6 +8,7 @@
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>浪漫的表白</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script>
     <style type="text/css">
       * {
         margin: 0;
@@ -189,25 +190,49 @@
     <div id="failureView">二维码已失效</div>
   </body>
   <script>
+    const privateKey = `-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCEHRXNg52BpFkfY3ZVUDUtV+cY3wDY20NiacgfyFGx+cllhYlo
+gAI9VCiGY8CDGpskVHAFP6bg+cB7NkUoFaHuU+rMBtjE1RyFdwK2K++QWhUVozCs
+9zoIfbas9XS/gZHbvc7Y1SfKOMOwjvf6qpbqq27xDfDDNP+hGWdIL1lOcwIDAQAB
+AoGATmpBDamoLFHTQEk17G9eENrS5TU/+Hc0aM5mpU6uBtg/DM4U//yy15oDL7k3
+g9mf6hFgKA1ezLwQ3lEY/TDR2pktG6hoIaJnWbWRADTymxDWW7EU6Ddf0+yM5ZN0
+ozinHqv6xk45Oc4aLeQeHW1Sh9KU3gUnaA/m2Uk3waso4skCQQDbO1hfPMWgMCr7
+5rxJLpphtUZDrSmmlXXjPDPwxc8J71OmfBzucYJL1/w8R1eTDQneeVzEz4iQ4KZZ
+gNmdteRlAkEAmkVYVT9pvtFvkUNpbhCPSBvPZzJRw4KIc+uv9kM9sfYae0FECECs
++hA5JElKLYNobJSYc44+jFtptRE5KCid9wJAZMGZk+uySDTbDHq2/ktU2KMfb+sd
+wVnfnFgG5xmCVeaQY2uXQF8aqxDQ9EM1lHfhmUXdxPY8pZkZ2vjFCx6VoQJAdBgx
+ZF3HT1E++3tWkPynRuWezBNDErVdyJaaIeHyQMVqoky4TNmXEsw4pET/LIcSg3vD
+ylpGWcvFHfzrHXyLewJBALTnltnupRJa0t2Oqkfp6mv7Z0G7Ld0a+1is53pEXlV/
+yiy14InDQg5rarpPspXqG5lsV3FZUnNrRhi/OlK5CBA=
+-----END RSA PRIVATE KEY-----`;
     const content = document.getElementById("xinTextView");
     const heartView = document.getElementById("heartView");
     const failureDom = document.getElementById("failureView");
     let qiQiuText;
     let xinText;
-    let failureTime;
     let isZao = true;
     if (content) {
       //获取url参数
       const paramsStr = window.location.search;
       const params = new URLSearchParams(paramsStr);
-      content.innerHTML = params.get("xinText") || params.get("text") || "520";
-      qiQiuText = params.get("qiQiuText") || "1314";
-      failureTime = params.get("failureTime");
-      if (failureTime) {
-        isZao = new Date() > new Date(Number(failureTime));
-        if (!isZao) {
-          document.body.style.background = "#fff";
-          failureDom.style.display = "block";
+      //使用私钥解密
+      const decrypt = new JSEncrypt();
+      decrypt.setPrivateKey(privateKey);
+      const resultText = decrypt.decrypt(params.get("params"));
+      if (resultText) {
+        const {
+          qiQiuText: text,
+          failureTime,
+          xinText,
+        } = JSON.parse(resultText);
+        content.innerHTML = xinText || "520";
+        qiQiuText = text;
+        if (failureTime) {
+          isZao = new Date() > new Date(Number(failureTime));
+          if (isZao) {
+            document.body.style.background = "#fff";
+            failureDom.style.display = "block";
+          }
         }
       }
     }
@@ -291,7 +316,7 @@
         b.move();
       }
     }
-    if (isZao) {
+    if (!isZao) {
       heartView.style.display = "block";
       draw();
     }
